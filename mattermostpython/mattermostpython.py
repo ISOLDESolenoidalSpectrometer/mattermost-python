@@ -3,6 +3,7 @@ import os
 import re
 import requests
 import traceback
+from typing import List
 import validators
 
 ####################################################################################################
@@ -142,7 +143,7 @@ class MattermostMessage:
     def get_title_link(self) -> str:
         return self.title_link
     
-    def get_fields(self) -> list[MattermostField]:
+    def get_fields(self) -> List[MattermostField]:
         return self.fields
     
     ####################################################################################################
@@ -203,7 +204,7 @@ class MattermostMessage:
         self.title_link = x
         return
     
-    def set_fields(self, x : list[MattermostField]) -> None:
+    def set_fields(self, x : List[MattermostField]) -> None:
         self.fields = x
         return
     
