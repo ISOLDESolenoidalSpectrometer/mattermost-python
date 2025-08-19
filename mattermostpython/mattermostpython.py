@@ -59,6 +59,7 @@ class MattermostMessage:
     _default_title = ''
     _default_title_link = ''
     _default_fields = []
+    _default_notification_message = ''
 
     def __init__(self,
                  username : str = _default_username,
@@ -76,7 +77,7 @@ class MattermostMessage:
                  title : str = _default_title,
                  title_link : str = _default_title_link,
                  fields : list = _default_fields,
-                 **kwargs
+                 notification_message : str = _default_notification_message,
         ):
         # Start storing member variables
         self.username = username
@@ -103,7 +104,7 @@ class MattermostMessage:
         self.fields = fields
 
         # Ensure notification has something useful!
-        self.notification_message = kwargs.get('notification_message', '')
+        self.notification_message = notification_message
         if self.notification_message == '':
             if self.title != '':
                 self.notification_message = self.title
@@ -162,6 +163,9 @@ class MattermostMessage:
     
     def get_fields(self) -> List[MattermostField]:
         return self.fields
+    
+    def get_notification_message(self) -> str:
+        return self.notification_message
     
     ####################################################################################################
     # SETTERS
@@ -227,6 +231,10 @@ class MattermostMessage:
     
     def add_field( self, x : MattermostField) -> None:
         self.fields.append(x)
+        return
+    
+    def set_notification_message( self, x : str ) -> None:
+        self.notification_message = x
         return
     
     # SETTERS FOR DEFAULTS
@@ -311,6 +319,10 @@ class MattermostMessage:
         cls._default_fields.append(x)
         return
     
+    @classmethod
+    def set_default_notification_message(cls, x : str) -> None:
+        cls._default_notification_message = x
+        return
 
     ####################################################################################################
     def _make_dict(self):
@@ -455,11 +467,9 @@ class MattermostInterface:
     ####################################################################################################
     def post_message_from_exception( self, e : Exception ) -> None:
         """
-        Posts a message from an exception, but adds some default metadata if it is lacking...
+        Posts a message from an exception without having to call MattermostMessage
         """
-        message = MattermostMessage.create_message_from_exception(e)
-
-        self.post(message)
+        self.post( MattermostMessage.create_message_from_exception(e) )
 
 
 
