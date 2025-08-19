@@ -43,22 +43,39 @@ class MattermostMessage:
     send the Mattermost message to the desired incoming webhook. Note that this uses some Linux/macos
     only functionality to generate a default username
     """
+
+    _default_username = ''
+    _default_icon_url = ''
+    _default_priority = MattermostMessagePriority.STANDARD
+    _default_message_info = ''
+    _default_colour = ''
+    _default_pretext = ''
+    _default_text = ''
+    _default_footer = ''
+    _default_footer_icon = ''
+    _default_author_name = ''
+    _default_author_link = ''
+    _default_author_icon = ''
+    _default_title = ''
+    _default_title_link = ''
+    _default_fields = []
+
     def __init__(self,
-                 username : str = '',
-                 icon_url : str = '',
-                 priority : MattermostMessagePriority = MattermostMessagePriority.STANDARD,
-                 message_info : str = '',
-                 colour : str = '',
-                 pretext : str = '',
-                 text : str = '',
-                 footer : str = '',
-                 footer_icon : str = '',
-                 author_name : str = '',
-                 author_link : str = '',
-                 author_icon : str = '',
-                 title : str = '',
-                 title_link : str = '',
-                 fields : list = [],
+                 username : str = _default_username,
+                 icon_url : str = _default_icon_url,
+                 priority : MattermostMessagePriority = _default_priority,
+                 message_info : str = _default_message_info,
+                 colour : str = _default_colour,
+                 pretext : str = _default_pretext,
+                 text : str = _default_text,
+                 footer : str = _default_footer,
+                 footer_icon : str = _default_footer_icon,
+                 author_name : str = _default_author_name,
+                 author_link : str = _default_author_link,
+                 author_icon : str = _default_author_icon,
+                 title : str = _default_title,
+                 title_link : str = _default_title_link,
+                 fields : list = _default_fields,
                  **kwargs
         ):
         # Start storing member variables
@@ -212,6 +229,88 @@ class MattermostMessage:
         self.fields.append(x)
         return
     
+    # SETTERS FOR DEFAULTS
+    # SETTERS
+    @classmethod
+    def set_default_username(cls, x : str) -> None:
+        cls._default_username = x
+        return
+    
+    @classmethod
+    def set_default_icon_url(cls, x : str) -> None:
+        cls._default_icon_url = x
+        return
+    
+    @classmethod
+    def set_default_priority(cls, x : MattermostMessagePriority) -> None:
+        cls._default_priority = x
+        return
+    
+    @classmethod
+    def set_default_message_info(cls, x : str) -> None:
+        cls._default_message_info = x
+        return
+    
+    @classmethod
+    def set_default_colour(cls, x : str) -> None:
+        cls._default_colour = x
+        return
+    
+    @classmethod
+    def set_default_pretext(cls, x : str) -> None:
+        cls._default_pretext = x
+        return
+    
+    @classmethod
+    def set_default_text(cls, x : str) -> None:
+        cls._default_text = x
+        return
+    
+    @classmethod
+    def set_default_footer(cls, x : str) -> None:
+        cls._default_footer = x
+        return
+    
+    @classmethod
+    def set_default_footer_icon(cls, x : str) -> None:
+        cls._default_footer_icon = x
+        return
+    
+    @classmethod
+    def set_default_author_name(cls, x : str) -> None:
+        cls._default_author_name = x
+        return
+    
+    @classmethod
+    def set_default_author_link(cls, x : str) -> None:
+        cls._default_author_link = x
+        return
+    
+    @classmethod
+    def set_default_author_icon(cls, x : str) -> None:
+        cls._default_author_icon = x
+        return
+    
+    @classmethod
+    def set_default_title(cls, x : str) -> None:
+        cls._default_title = x
+        return
+    
+    @classmethod
+    def set_default_title_link(cls, x : str) -> None:
+        cls._default_title_link = x
+        return
+    
+    @classmethod
+    def set_default_fields(cls, x : List[MattermostField]) -> None:
+        cls._default_fields = x
+        return
+    
+    @classmethod
+    def add_default_field( cls, x : MattermostField) -> None:
+        cls._default_fields.append(x)
+        return
+    
 
     ####################################################################################################
     def _make_dict(self):
@@ -352,5 +451,15 @@ class MattermostInterface:
         if x.status_code == 200:
             return True
         return False
+    
+    ####################################################################################################
+    def post_message_from_exception( self, e : Exception ) -> None:
+        """
+        Posts a message from an exception, but adds some default metadata if it is lacking...
+        """
+        message = MattermostMessage.create_message_from_exception(e)
+
+        self.post(message)
+
 
 
