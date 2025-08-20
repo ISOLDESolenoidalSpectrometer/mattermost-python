@@ -1,3 +1,4 @@
+import copy
 import enum
 import os
 import re
@@ -35,6 +36,16 @@ class MattermostField:
         self.title = title
         self.value = value
         return
+    
+    def __str__(self):
+        mystr = f"|  {self.title}: {self.value}"
+        if self.short:
+            padding = 40 - len(mystr) - 1
+        else:
+            padding = 80 - len(mystr) - 1
+        
+        mystr += " "*padding + "|\n"
+        return mystr
 
 ####################################################################################################
 class MattermostMessage:
@@ -62,60 +73,132 @@ class MattermostMessage:
     _default_notification_message = ''
 
     def __init__(self,
-                 username : str = _default_username,
-                 icon_url : str = _default_icon_url,
-                 priority : MattermostMessagePriority = _default_priority,
-                 message_info : str = _default_message_info,
-                 colour : str = _default_colour,
-                 pretext : str = _default_pretext,
-                 text : str = _default_text,
-                 footer : str = _default_footer,
-                 footer_icon : str = _default_footer_icon,
-                 author_name : str = _default_author_name,
-                 author_link : str = _default_author_link,
-                 author_icon : str = _default_author_icon,
-                 title : str = _default_title,
-                 title_link : str = _default_title_link,
-                 fields : list = _default_fields,
-                 notification_message : str = _default_notification_message,
+                 username : str = None,
+                 icon_url : str = None,
+                 priority : MattermostMessagePriority = None,
+                 message_info : str = None,
+                 colour : str = None,
+                 pretext : str = None,
+                 text : str = None,
+                 footer : str = None,
+                 footer_icon : str = None,
+                 author_name : str = None,
+                 author_link : str = None,
+                 author_icon : str = None,
+                 title : str = None,
+                 title_link : str = None,
+                 fields : list = None,
+                 notification_message : str = None,
         ):
         # Start storing member variables
+        if username == None:
+            username = self._default_username
         self.username = username
+        
+        if icon_url == None:
+            icon_url = self._default_icon_url
         self.icon_url = icon_url
+        
+        if priority == None:
+            priority = self._default_priority
         self.priority = priority
+        
+        if message_info == None:
+            message_info = self._default_message_info
         self.message_info = message_info
 
-        # Attachments
+        if colour == None:
+            colour = self._default_colour
+
         pattern = re.match('#([0-9A-Fa-f]){6}$', colour)
         if pattern != None:
             self.colour = colour
         else:
             self.colour = ''
 
+
+        if pretext == None:
+            pretext = self._default_pretext
         self.pretext = pretext
+
+        if text == None:
+            text = self._default_text
         self.text = text
+
+        if footer == None:
+            footer = self._default_footer
         self.footer = footer
+
+        if footer_icon == None:
+            footer_icon = self._default_footer_icon
         self.footer_icon = footer_icon
+        
+        if author_name == None:
+            author_name = self._default_author_name
         self.author_name = author_name
+        
+        if author_link == None:
+            author_link = self._default_author_link
         self.author_link = author_link
+        
+        if author_icon == None:
+            author_icon = self._default_author_icon
         self.author_icon = author_icon
+        
+        if title == None:
+            title = self._default_title
         self.title = title
+        
+        if title_link == None:
+            title_link = self._default_title_link
         self.title_link = title_link
+        
+        if fields == None:
+            fields = copy.deepcopy(self._default_fields)
         self.fields = fields
+        
+        # self.fields = copy.deepcopy(fields) # This is needed to prevent the lists all sharing the same elements!
 
         # Ensure notification has something useful!
-        self.notification_message = notification_message
-        if self.notification_message == '':
+        if notification_message == None:
+            notification_message = self._default_notification_message
+        
+        if notification_message == '':
             if self.title != '':
-                self.notification_message = self.title
+                notification_message = self.title
             elif self.pretext != '':
-                self.notification_message = self.pretext
+                notification_message = self.pretext
             elif self.text != '':
-                self.notification_message = self.text
+                notification_message = self.text
             else:
-                self.notification_message = 'ALERT!'
-
+                notification_message = 'ALERT!'
+        self.notification_message = notification_message
+        
         return
+    
+    ####################################################################################################
+    def __str__(self):
+        """
+        Get a string representation of the message
+        """
+        mystr =f"""
+####################################################################################################
+NOTIFICATION: {self.notification_message}
+PRIORITY:     {self.priority.value}
+COLOUR:       {self.colour}
+
+[{self.icon_url}] {self.username} 
+{self.pretext}
+| [{self.author_icon}] {self.author_name} [{self.author_link}]
+| {self.text}
+|
+{"".join([ str(x) for x in self.fields ])}|
+| [{self.footer_icon}] {self.footer}
+
+[{self.message_info}]
+####################################################################################################
+"""
+        return mystr
     
     ####################################################################################################
     # GETTERS

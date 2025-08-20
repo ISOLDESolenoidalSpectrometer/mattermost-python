@@ -6,6 +6,7 @@ ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-note
 class MattermostPythonTest( unittest.TestCase ):
     def setUp(self):
         self.interface = mp.MattermostInterface('.mattermost_url.txt')
+        mp.MattermostMessage.set_default_title('DEFAULT TITLE')
     
     def test_empty_message(self):
         message = mp.MattermostMessage()
